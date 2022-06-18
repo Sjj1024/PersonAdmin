@@ -3,8 +3,10 @@ import axios from 'axios'
 // import store from '@/store'
 // import { getToken } from '@/utils/auth'
 
-// create an axios instance
+// 创建一个axios实例，并配置跟路径和超时时间
 const service = axios.create({
+    baseURL: process.env.VUE_APP_BASE_API,
+    timeout: 5000
 })
 
 // request interceptor

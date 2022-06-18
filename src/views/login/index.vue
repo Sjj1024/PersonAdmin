@@ -9,18 +9,20 @@
       label-position="left"
     >
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">
+          <img src="@/assets/common/login-logo.png" alt="" />
+        </h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="mobile">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
+          ref="mobile"
+          v-model="loginForm.mobile"
+          placeholder="请输入手机号"
+          name="mobile"
           type="text"
           tabindex="1"
           auto-complete="on"
@@ -50,6 +52,7 @@
       </el-form-item>
 
       <el-button
+        class="loginBtn"
         :loading="loading"
         type="primary"
         style="width: 100%; margin-bottom: 30px"
@@ -59,22 +62,22 @@
       </el-button>
 
       <div class="tips">
-        <span style="margin-right: 20px">username: admin</span>
-        <span> password: any</span>
+        <span style="margin-right: 20px">账号: 13800000002</span>
+        <span> 密码: 123456</span>
       </div>
     </el-form>
   </div>
 </template>
 
 <script>
-import { validUsername } from "@/utils/validate";
+import { validMobile } from "@/utils/validate";
 
 export default {
   name: "Login",
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error("Please enter the correct user name"));
+    const validateMobile = (rule, value, callback) => {
+      if (!validMobile(value)) {
+        callback(new Error("请输入正确格式的手机号"));
       } else {
         callback();
       }
@@ -88,15 +91,22 @@ export default {
     };
     return {
       loginForm: {
-        username: "admin",
-        password: "111111",
+        mobile: "13800000002",
+        password: "123456",
       },
       loginRules: {
-        username: [
-          { required: true, trigger: "blur", validator: validateUsername },
+        mobile: [
+          { required: true, trigger: "blur", message: "手机号必须填写" },
+          { validator: validateMobile, trigger: "blur" },
         ],
         password: [
-          { required: true, trigger: "blur", validator: validatePassword },
+          {
+            required: true,
+            trigger: "blur",
+            min: 6,
+            max: 18,
+            message: "密码长度必须6-18位",
+          },
         ],
       },
       loading: false,
@@ -151,8 +161,10 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg: #283443;
-$light_gray: #fff;
-$cursor: #fff;
+//修改变量的值$light_gray：
+// $light_gray: #68b0fe; // 将输入框颜色改成蓝色
+$light_gray: black; // 将输入框颜色改成蓝色
+$cursor: black;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -162,6 +174,8 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background-image: url("~@/assets/common/login.jpg"); // 设置背景图片
+  background-position: center; // 将图片位置设置为充满整个屏幕
   .el-input {
     display: inline-block;
     height: 47px;
@@ -186,9 +200,23 @@ $cursor: #fff;
 
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.7);
     border-radius: 5px;
     color: #454545;
+  }
+
+  // 设置错误提示颜色
+  .el-form-item__error {
+    color: white;
+  }
+
+  // 设置登录背景颜色
+  .loginBtn {
+    height: 64px;
+    line-height: 38px;
+    font-size: 24px;
+    background: #407ffe;
+    border: none;
   }
 }
 </style>
