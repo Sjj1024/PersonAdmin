@@ -22,10 +22,8 @@ const actions = {
   async login(context, data) {
     // 异步调用登录接口
     const res = await login(data)
-    if (res.data.success) {
-      // 当登陆成功后，设置用户的token
-      context.commit("setToken", res.data.data)
-    }
+    // 因为在响应拦截器中已经捕获了异常和错误，所以在这里不必处理，而且已经解包过了，所以得到的res就是返回的data
+    context.commit("setToken", res)
   }
 }
 

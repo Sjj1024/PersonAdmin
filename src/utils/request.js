@@ -1,5 +1,5 @@
 import axios from 'axios'
-// import { MessageBox, Message } from 'element-ui'
+import { Message } from 'element-ui'
 // import store from '@/store'
 // import { getToken } from '@/utils/auth'
 
@@ -11,10 +11,35 @@ const service = axios.create({
 
 // request interceptor
 service.interceptors.request.use(
+    config => {
+        // 请求配置对象，里面包含有method，url等信息
+        console.log(config);
+    },
+    error => {
+        // 网络发生错误时执行的函数
+    }
 )
 
 // response interceptor
 service.interceptors.response.use(
+    // 正常发送请求时会执行的处理函数
+    res => {
+        // 将数据解包，得到里面的内容
+        const { success, message, data } = res.data
+        // 根据success判断是否执行后面的操作
+        if (success) {
+            return data
+        } else {
+            // 如果获取到的数据有问题，就报错误信息
+            Message.error(message)
+            return Promise.reject(new Error(message))
+        }
+    },
+    // 出现网络错误等出现的错误捕获
+    error => {
+        Message.error(error.message)
+        return Promise.reject(new Error(error))
+    }
 )
 
 export default service
