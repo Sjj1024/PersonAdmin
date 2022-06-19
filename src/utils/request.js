@@ -42,9 +42,15 @@ service.interceptors.response.use(
         }
     },
     // 出现网络错误等出现的错误捕获
-    error => {
-        Message.error(error.message) // 提示错误信息
-        return Promise.reject(error) // 返回执行错误 让当前的执行链跳出成功 直接进入 catch
+    async error => {
+        //判断错误码： error 有response对象 
+        if (error.response && error.response.data && error.response.data.code === 10002) {
+            // 后端告诉前端token超时了
+            await store.dispatch('user/logout') // 调用登出action
+            router.push('/login') // 跳到登录页
+        }
+        Message.error(error.message)
+        return Promise.reject(error)
     }
 )
 

@@ -57,8 +57,8 @@ export default {
       this.$store.dispatch("app/toggleSideBar");
     },
     async logout() {
-      await this.$store.dispatch("user/logout");
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+      await this.$store.dispatch("user/logout"); // 这里不论写不写 await 登出方法都是同步的（因为removeToken，removeUserInfo没有发起网络请求）
+      this.$router.push(`/login`); // 跳到登录
     },
   },
 };
