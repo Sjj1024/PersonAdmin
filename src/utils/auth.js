@@ -7,7 +7,10 @@ export function getToken() {
 }
 
 export function setToken(token) {
-  return Cookies.set(TokenKey, token)
+  // let seconds = 10;
+  // let expires = new Date(new Date() * 1 + seconds * 1000);
+  // Cookies.set('username', 'tanggaowei', { expires: expires }); // 10 秒后失效
+  return Cookies.set(TokenKey, token, { expires: 1 })
 }
 
 export function removeToken() {

@@ -14,9 +14,11 @@ service.interceptors.request.use(
     config => {
         // 请求配置对象，里面包含有method，url等信息
         console.log(config);
+        return config
     },
     error => {
-        // 网络发生错误时执行的函数
+        Message.error(error.message) // 提示错误信息
+        return Promise.reject(error) // 返回执行错误 让当前的执行链跳出成功 直接进入 catch
     }
 )
 
@@ -37,8 +39,8 @@ service.interceptors.response.use(
     },
     // 出现网络错误等出现的错误捕获
     error => {
-        Message.error(error.message)
-        return Promise.reject(new Error(error))
+        Message.error(error.message) // 提示错误信息
+        return Promise.reject(error) // 返回执行错误 让当前的执行链跳出成功 直接进入 catch
     }
 )
 
