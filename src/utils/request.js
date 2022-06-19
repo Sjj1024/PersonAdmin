@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-// import store from '@/store'
+import store from '@/store'
 // import { getToken } from '@/utils/auth'
 
 // 创建一个axios实例，并配置跟路径和超时时间
@@ -14,6 +14,10 @@ service.interceptors.request.use(
     config => {
         // 请求配置对象，里面包含有method，url等信息
         console.log(config);
+        // 判断如果存在token，就加上
+        if (store.getters.token) {
+            config.headers["Authorization"] = `Bearer ${store.getters.token}`
+        }
         return config
     },
     error => {
