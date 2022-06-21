@@ -24,6 +24,9 @@ Object.keys(directives).forEach(key => {
   Vue.directive(key, directives[key])
 })
 
+import Component from '@/components'
+Vue.use(Component) // 注册自己的插件，这个use方法会调用上边的install
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
