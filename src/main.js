@@ -27,6 +27,13 @@ Object.keys(directives).forEach(key => {
 import Component from '@/components'
 Vue.use(Component) // 注册自己的插件，这个use方法会调用上边的install
 
+import * as filters from '@/filters' // 引入工具类
+// 注册全局的过滤器（批量将所有过滤器进行注册，跟指令一样）
+Object.keys(filters).forEach(key => {
+  // 注册过滤器
+  Vue.filter(key, filters[key])
+})
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
