@@ -1,10 +1,15 @@
 <template>
   <!-- //弹窗，需要使用到element的dialog对话框组件 -->
-  <el-dialog title="新增部门" :visible="showDialog">
+  <el-dialog title="新增部门" :visible="showDialog" @close="btnCancel">
     <!-- //visible：控制是否显示 -->
     <!-- 表单组件  el-form   label-width设置label的宽度   -->
     <!-- 匿名插槽 -->
-    <el-form label-width="120px" :model="formData" :rules="rules">
+    <el-form
+      label-width="120px"
+      :model="formData"
+      :rules="rules"
+      ref="deptForm"
+    >
       <el-form-item label="部门名称" prop="name">
         <el-input
           style="width: 80%"
@@ -21,10 +26,19 @@
       </el-form-item>
       <el-form-item label="部门负责人" prop="manager">
         <el-select
+          v-model="formData.manager"
           style="width: 80%"
           placeholder="请选择"
-          v-model="formData.manager"
-        />
+          @focus="getEmployeeSimple"
+        >
+          <!-- 需要循环生成选项   这里做一下简单的处理 显示的是用户名 存的也是用户名-->
+          <el-option
+            v-for="item in peoples"
+            :key="item.id"
+            :label="item.username"
+            :value="item.username"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="部门介绍" prop="introduce">
         <el-input
@@ -40,7 +54,7 @@
     <el-row slot="footer" type="flex" justify="center">
       <!-- 列被分为24 -->
       <el-col :span="6">
-        <el-button type="primary" size="small">确定</el-button>
+        <el-button type="primary" size="small" @click="btnOK">确定</el-button>
         <el-button size="small">取消</el-button>
       </el-col>
     </el-row>
@@ -48,7 +62,8 @@
 </template>
 
 <script>
-import { getDepartments } from "@/api/departments";
+import { getDepartments, addDepartments } from "@/api/departments";
+import { getEmployeeSimple } from "@/api/employees";
 
 export default {
   // 需要传入一个props变量来控制 显示或者隐藏
@@ -94,6 +109,7 @@ export default {
         manager: "", // 部门管理者
         introduce: "", // 部门介绍
       },
+      peoples: [], // 接收获取的员工简单列表的数据
       // 定义校验规则
       rules: {
         name: [
@@ -140,6 +156,31 @@ export default {
   async created() {
     // 首先获取最新的组织架构数据
     const { depts } = await getDepartments();
+  },
+  methods: {
+    // 获取员工简单列表数据
+    async getEmployeeSimple() {
+      this.peoples = await getEmployeeSimple(); //上边的optin用到的peoples是在这里保存的***
+    },
+    // 点击确定时触发
+    btnOK() {
+      this.$refs.deptForm.validate(async (isOK) => {
+        if (isOK) {
+          // 表示可以提交了
+          // this.formData.pid = this.treeNode.id 这样写更好理解，更简单
+          await addDepartments({ ...this.formData, pid: this.treeNode.id }); // 调用新增接口 添加父部门的id
+          //在 await addDepartments后边书写
+          this.$emit("addDepts");
+          // update:props名称
+          this.$emit("update:showDialog", false);
+        }
+      });
+    },
+    //add-dept.vue
+    btnCancel() {
+      this.$refs.deptForm.resetFields(); // 重置校验字段
+      this.$emit("update:showDialog", false); // 关闭
+    },
   },
 };
 </script>

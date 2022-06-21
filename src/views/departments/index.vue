@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div class="app-container">
       <el-card class="tree-card">
-        <tree-tools :tree-node="company" :is-root="true" />
+        <tree-tools :tree-node="company" :is-root="true" @addDepts="addDepts" />
         <el-tree :data="departs" :props="defaultProps" default-expand-all>
           <tree-tools
             slot-scope="{ data }"
@@ -14,7 +14,11 @@
       </el-card>
     </div>
     <!-- 放置新增弹层组件  -->
-    <add-dept :show-dialog="showDialog" :tree-node="node" />
+    <add-dept
+      :show-dialog.sync="showDialog"
+      :tree-node="node"
+      @addDepts="getDepartments"
+    />
   </div>
 </template>
 
