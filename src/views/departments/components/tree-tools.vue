@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { delDepartments } from "@/api/departments";
+import { delDepartments, getDepartDetail } from "@/api/departments";
 
 // 该组件需要对外开放属性 外部需要提供一个对象 对象里需要有name  manager
 export default {
@@ -61,6 +61,7 @@ export default {
         this.$emit("addDepts", this.treeNode);
       } else if (type === "edit") {
         //  编辑部门的操作
+        this.$emit("editDepts", this.treeNode);
       } else {
         //  删除操作
         this.$confirm("确定要删除该部门吗")
