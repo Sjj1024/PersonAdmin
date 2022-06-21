@@ -28,3 +28,31 @@ export function delEmployee(id) {
         method: 'delete'
     })
 }
+
+
+/** **
+ *  新增员工的接口
+ * **/
+export function addEmployee(data) {
+    return request({
+        method: 'post',
+        url: '/sys/user',
+        data
+    })
+}
+
+
+//api/employees.js
+
+/** *
+ *  封装一个导入员工的接口
+ *
+ * ***/
+
+export function importEmployee(data) { //接口要求data必须是数组类型
+    return request({
+        url: '/sys/user/batch',
+        method: 'post',
+        data
+    })
+}

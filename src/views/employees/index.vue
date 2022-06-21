@@ -4,9 +4,18 @@
       <page-tools :show-before="true">
         <span slot="before">共{{ page.total }}条记录</span>
         <template #after>
-          <el-button size="small" type="warning">导入</el-button>
-          <el-button size="small" type="danger">导出</el-button>
-          <el-button size="small" type="primary">新增员工</el-button>
+          <el-button
+            size="small"
+            type="warning"
+            @click="$router.push('/import')"
+            >导入</el-button
+          >
+          <el-button size="small" type="danger" @click="exportData"
+            >导出</el-button
+          >
+          <el-button size="small" type="primary" @click="showDialog = true">
+            新增员工
+          </el-button>
         </template>
       </page-tools>
       <!-- 放置表格和分页 -->
@@ -72,11 +81,15 @@
         </el-row>
       </el-card>
     </div>
+    <add-employee :showDialog.sync="showDialog" />
   </div>
 </template>
+
 <script>
 import { getEmployeeList, delEmployee } from "@/api/employees";
 import EmployeeEnum from "@/api/constant/employees";
+import AddEmployee from "./components/add-employee";
+import { formatDate } from "@/filters";
 
 export default {
   data() {
@@ -88,7 +101,11 @@ export default {
         size: 10,
         total: 0, // 总数
       },
+      showDialog: false,
     };
+  },
+  components: {
+    AddEmployee,
   },
   created() {
     this.getEmployeeList();
@@ -120,6 +137,58 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    // 导出excel数据
+    exportData() {
+      //  做操作
+      // 表头对应关系
+      const headers = {
+        姓名: "username",
+        手机号: "mobile",
+        入职日期: "timeOfEntry",
+        聘用形式: "formOfEmployment",
+        转正日期: "correctionTime",
+        工号: "workNumber",
+        部门: "departmentName",
+      };
+      // 懒加载
+      import("@/vendor/Export2Excel").then(async (excel) => {
+        const { rows } = await getEmployeeList({
+          page: 1,
+          size: this.page.total,
+        });
+        // [["张三", "13811"，"2018","1", "2018", "10002"],...]
+        const data = this.formatJson(headers, rows);
+
+        excel.export_json_to_excel({
+          header: Object.keys(headers),
+          data,
+          filename: "员工信息表",
+          autoWidth: true,
+          bookType: "xlsx",
+        });
+      });
+    },
+    // 该方法负责将数组转化成二维数组
+    formatJson(headers, rows) {
+      return rows.map((item) => {
+        return Object.keys(headers).map((key) => {
+          // 需要判断 字段
+          if (
+            headers[key] === "timeOfEntry" ||
+            headers[key] === "correctionTime"
+          ) {
+            // 格式化日期
+            return formatDate(item[headers[key]]);
+          } else if (headers[key] === "formOfEmployment") {
+            const obj = EmployeeEnum.hireType.find(
+              (obj) => obj.id === item[headers[key]]
+            );
+            return obj ? obj.value : "未知";
+          }
+          return item[headers[key]];
+        });
+      });
     },
   },
 };
