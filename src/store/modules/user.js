@@ -38,13 +38,13 @@ const actions = {
   },
   // 获取用户资料action，以下代码时异步操作，放入actions中
   async getUserInfo(context) {
-    const result = await getUserInfo()  // 获取返回值
-    context.commit('setUserInfo', result) // 将整个的个人信息设置到用户的vuex数据中
-    return result // 这里为什么要返回 为后面埋下伏笔
-  },
-  // 获取用户资料action
-  async getUserInfo(context) {
-    const result = await getUserInfo() // result就是用户的基本资料
+    let result = {}
+    try {
+      result = await getUserInfo() // result就是用户的基本资料
+    } catch {
+      resetRouter.push('/login') // 跳到登录页
+      return
+    }
     //这个接口需要用户的userId，在前一个接口处，我们已经获取到了，所以可以直接在后面的内容去衔接
     const baseInfo = await getUserDetailById(result.userId) // 为了获取头像
     const baseResult = { ...result, ...baseInfo } // 将两个接口结果合并

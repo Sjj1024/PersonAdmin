@@ -23,6 +23,22 @@
         <el-table border :data="list">
           <el-table-column label="序号" sortable="" type="index" width="70" />
           <el-table-column label="姓名" sortable="" prop="username" />
+          <el-table-column label="头像" align="center">
+            <template slot-scope="{ row }">
+              <img
+                v-imagerror="require('@/assets/common/bigUserHeader.png')"
+                :src="row.staffPhoto"
+                style="
+                  border-radius: 50%;
+                  width: 100px;
+                  height: 100px;
+                  padding: 10px;
+                "
+                alt=""
+                @click="showQrCode(row.staffPhoto)"
+              />
+            </template>
+          </el-table-column>
           <el-table-column label="工号" sortable="" prop="workNumber" />
           <el-table-column
             label="聘用形式"
@@ -49,11 +65,19 @@
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
             <template slot-scope="{ row }">
-              <el-button type="text" size="small">查看</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="$router.push(`/employees/detail/${row.id}`)"
+              >
+                查看
+              </el-button>
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="editRole(row.id)">
+                角色
+              </el-button>
               <el-button
                 type="text"
                 size="small"
@@ -82,6 +106,16 @@
       </el-card>
     </div>
     <add-employee :showDialog.sync="showDialog" />
+    <el-dialog title="二维码" :visible.sync="showCodeDialog">
+      <el-row type="flex" justify="center">
+        <canvas ref="myCanvas" />
+      </el-row>
+    </el-dialog>
+    <assign-role
+      ref="assignRole"
+      :show-role-dialog.sync="showRoleDialog"
+      :user-id="userId"
+    />
   </div>
 </template>
 
@@ -90,6 +124,8 @@ import { getEmployeeList, delEmployee } from "@/api/employees";
 import EmployeeEnum from "@/api/constant/employees";
 import AddEmployee from "./components/add-employee";
 import { formatDate } from "@/filters";
+import QrCode from "qrcode";
+import AssignRole from "./components/assign-role.vue";
 
 export default {
   data() {
@@ -102,10 +138,14 @@ export default {
         total: 0, // 总数
       },
       showDialog: false,
+      showCodeDialog: false,
+      showRoleDialog: false,
+      userId: null,
     };
   },
   components: {
     AddEmployee,
+    AssignRole,
   },
   created() {
     this.getEmployeeList();
@@ -114,6 +154,26 @@ export default {
     changePage(newPage) {
       this.page.page = newPage;
       this.getEmployeeList();
+    },
+    // 编辑角色
+    async editRole(id) {
+      this.userId = id;
+      await this.$refs.assignRole.getUserDetailById(id); // 父组件调用子组件方法
+      this.showRoleDialog = true;
+    },
+    showQrCode(url) {
+      // url存在的情况下 才弹出层
+      if (url) {
+        this.showCodeDialog = true; // 数据更新了 但是我的弹层会立刻出现吗 ？页面的渲染是异步的！！！！
+        // 有一个方法可以在上一次数据更新完毕，页面渲染完毕之后
+        this.$nextTick(() => {
+          // 此时可以确认已经有ref对象了
+          QrCode.toCanvas(this.$refs.myCanvas, url); // 将地址转化成二维码
+          // 如果转化的二维码后面信息 是一个地址的话 就会跳转到该地址 如果不是地址就会显示内容
+        });
+      } else {
+        this.$message.warning("该用户还未上传头像");
+      }
     },
     async getEmployeeList() {
       this.loading = true;

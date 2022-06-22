@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import store from '@/store'
-// import { getToken } from '@/utils/auth'
+import router from '@/router'
 
 // 创建一个axios实例，并配置跟路径和超时时间
 const service = axios.create({
@@ -45,10 +45,12 @@ service.interceptors.response.use(
     async error => {
         //判断错误码： error 有response对象 
         if (error.response && error.response.data) {
-            if (error.response.data.code === 10002 || error.response.data.code === 401) {
+            if (error.response.data.code == 10002 || error.response.status == 401) {
                 // 后端告诉前端token超时了
                 await store.dispatch('user/logout') // 调用登出action
                 router.push('/login') // 跳到登录页
+                Message.error(error.response.data.message)
+                return Promise.reject(error)
             }
         }
         Message.error(error.message)
