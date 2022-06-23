@@ -1,5 +1,6 @@
 // 导入路由
 import router from "./router";
+import { error404 } from "./router"
 import NProgress from 'nprogress' // 引入一份进度条插件
 // 导入vuex，判断是否存在token
 import store from '@/store' // 引入vuex store实例
@@ -17,8 +18,13 @@ router.beforeEach(async (to, from, next) => {
     } else {
       if (!store.getters.userId) {
         // 如果没有id这个值 才会调用 vuex的获取资料的action
-        await store.dispatch('user/getUserInfo')
-        // 为什么要写await 因为我们想获取完资料再去放行
+        const { roles } = await store.dispatch('user/getUserInfo')
+        // 筛选用户路由的时候，必须是同步操作，这样才不会造成页面混乱
+        // 此时获取到的路由是用户路由，
+        const routes = await store.dispatch("permission/filterRoutes", roles.menus)
+        // 在这里将用户路由添加到动态路由最后之后，404路由就不是最后了，会引起刷新404问题
+        router.addRoutes([...routes, error404])
+        next(to.path)
       }
       next()
     }

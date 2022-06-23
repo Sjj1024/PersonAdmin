@@ -39,3 +39,10 @@ export function getPermissionDetail(id) {
     })
 }
 
+// 获取用户权限详情
+export function getRoleDetail(id) {
+    return request({
+        url: `/sys/role/${id}`
+    })
+}
+

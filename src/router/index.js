@@ -57,11 +57,6 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
-  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -81,15 +76,23 @@ export const constantRoutes = [
       component: () => import('@/views/import')
     }]
   },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  }
+  // 404 page must be placed at the end !!!如果是静态路由，放这里就可以
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
+// 导出一个404页面，让动态路由引用，因为它必须放在路由的最后
+export const error404 = { path: '*', redirect: '/404', hidden: true }
+
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
+  // mode: 'hash', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...asyncRoutes] // 临时合并所有的路由
+  routes: [...constantRoutes] // 临时合并所有的路由
 })
 
 const router = createRouter()
@@ -99,5 +102,7 @@ export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
 }
+
+// 创建一个用于重置路由的方法，因为用户推出的时候，需要清空路由
 
 export default router

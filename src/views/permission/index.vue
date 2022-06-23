@@ -68,6 +68,7 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-tree ref="permTree"> </el-tree>
   </div>
 </template>
 
