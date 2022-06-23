@@ -1,6 +1,6 @@
 import { login, logout, getUserInfo, getUserDetailById } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import { resetRouter, router } from '@/router'
 
 const state = {
   token: getToken(),
@@ -42,7 +42,7 @@ const actions = {
     try {
       result = await getUserInfo() // result就是用户的基本资料
     } catch {
-      resetRouter.push('/login') // 跳到登录页
+      router.push('/login') // 跳到登录页
       return
     }
     //这个接口需要用户的userId，在前一个接口处，我们已经获取到了，所以可以直接在后面的内容去衔接
@@ -59,6 +59,10 @@ const actions = {
     context.commit('removeToken') // 不仅仅删除了vuex中的 还删除了缓存中的
     // 删除用户资料
     context.commit('reomveUserInfo') // 删除用户信息
+    // 重置路由
+    resetRouter()
+    // 将vuex中的数据清除
+    context.commit("permission/setRoutes", [], { root: true })
   }
 }
 

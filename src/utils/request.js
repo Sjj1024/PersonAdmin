@@ -13,7 +13,7 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         // 请求配置对象，里面包含有method，url等信息
-        console.log(config);
+        // console.log(config);
         // 判断如果存在token，就加上
         if (store.getters.token) {
             config.headers["Authorization"] = `Bearer ${store.getters.token}`

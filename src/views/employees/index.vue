@@ -188,7 +188,7 @@ export default {
       return obj ? obj.value : "未知";
     },
     async deleteEmployee(id) {
-      console.log(id);
+      // console.log(id);
       try {
         await this.$confirm("您确定删除该员工吗");
         await delEmployee(id);

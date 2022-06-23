@@ -103,6 +103,4 @@ export function resetRouter() {
   router.matcher = newRouter.matcher // reset router
 }
 
-// 创建一个用于重置路由的方法，因为用户推出的时候，需要清空路由
-
 export default router
