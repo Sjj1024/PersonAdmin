@@ -40,6 +40,7 @@
             </template>
           </el-table-column>
           <el-table-column label="工号" sortable="" prop="workNumber" />
+          <el-table-column label="手机号" sortable="" prop="mobile" />
           <el-table-column
             label="聘用形式"
             sortable=""
@@ -82,6 +83,7 @@
                 type="text"
                 size="small"
                 @click="deleteEmployee(row.id)"
+                :disabled="!checkPermission('point-user-delete')"
               >
                 删除
               </el-button>
