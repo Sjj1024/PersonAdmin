@@ -10,7 +10,7 @@ const state = {
 const mutations = {
     setRoutes(state, newRoute) {
         // 修改路由的时候，应当是静态路由+当前用户的权限路由，不是[...state.routes, ...newRoutes]
-        state.routes = [...newRoute, ...constantRoutes]
+        state.routes = [...constantRoutes, ...newRoute]
     }
 }
 
