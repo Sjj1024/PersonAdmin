@@ -14,6 +14,7 @@ import attendancesRouter from './modules/attendances'
 import salarysRouter from './modules/salarys'
 import settingRouter from './modules/setting'
 import socialRouter from './modules/social'
+import userRouter from "./modules/user"
 
 
 // 动态路由 （异步路由就是动态路由，一般异步就是要获取动态数据）
@@ -80,7 +81,8 @@ export const constantRoutes = [
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
-  }
+  },
+  userRouter
   // 404 page must be placed at the end !!!如果是静态路由，放这里就可以
   // { path: '*', redirect: '/404', hidden: true }
 ]
